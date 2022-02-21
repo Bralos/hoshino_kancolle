@@ -99,7 +99,7 @@ def get_hour_res(ship_list,end=-1):
                 for ele in voice_list:
                     download_file(ele)
     f = open('hourcall_config.py','w',encoding = 'utf-8')
-    f.write(f"HOUR_CALLS_ON = {str(ship_number)} \n\nHour_CALLS = {ship_text_dict}")
+    f.write(f"HOUR_CALLS_ON = {str(ship_number)} \n\nHOUR_CALLS = {ship_text_dict}")
     f.close()
 
 ship_list = get_ship_list()
