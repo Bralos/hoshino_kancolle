@@ -11,7 +11,7 @@ def get_ship_list():
     source=requests.get('http://w.kcwiki.moe:8080/wiki/%E8%88%B0%E5%A8%98%E5%9B%BE%E9%89%B4')
     #来源：舰娘百科
     soup=bs4.BeautifulSoup(source.text,'lxml') #'lxml' processes the html
-    for n in range(5): #priliminary test, only first 150 ships.
+    for n in range(50): #priliminary test, only first 150 ships.
         name = soup.select("td")[n]('a')[0]["title"]
         if name != "未实装":
             herf = soup.select("td")[n]('a')[0]["href"]
@@ -97,7 +97,9 @@ def get_hour_res(ship_list,end=-1):
                 ship_text_dict.update([(str(number),hc_text)])
                 ship_number.append(number)
                 for ele in voice_list:
-                    download_file(ele)
+                    if "https://uploads.kcwiki.cn/commons/" in ele:
+                        print(f"downloading{ele}")
+                        download_file(ele)
     f = open('hourcall_config.py','w',encoding = 'utf-8')
     f.write(f"HOUR_CALLS_ON = {str(ship_number)} \n\nHOUR_CALLS = {ship_text_dict}")
     f.close()
