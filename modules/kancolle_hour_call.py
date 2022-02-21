@@ -2,10 +2,12 @@ import pytz
 from datetime import datetime
 import kokkoro
 from kokkoro.service import Service, BroadcastTag, BroadcastService
+from kokkoro.common_interface import KokkoroBot, EventInterface
+from kokkoro import priv
 
-sv = Service('hourcall', enable_on_default=True, help_='时报')
-svhc = BroadcastService('kancolle_hour_call',
-    broadcast_tag=[BroadcastTag.default], enable_on_default=False, help_='舰C时报')
+#sv = Service('hourcall', enable_on_default=True, help_='时报')
+#sv = BroadcastService('kancolle_hour_call', broadcast_tag=BroadcastTag.default, enable_on_default=True, help_='舰C时报')
+sv = BroadcastService('kc_call', broadcast_tag=BroadcastTag.default, use_priv=priv.SUPERUSER, manage_priv=priv.SUPERUSER, enable_on_default=True)
 tz = pytz.timezone('America/New_York')
 
 def get_hour_call():
@@ -17,18 +19,18 @@ def get_hour_call():
     return cfg.HOUR_CALLS[g]
 
 
-@svhc.scheduled_job('cron', hour='*', minute="*")
-async def hour_call():
+@sv.scheduled_job('cron', hour='*', minute="*", second="30")
+async def kc_hour_call():
     now = datetime.now(tz)
     if 4 <= now.hour <= 8:
         return  # 宵禁 免打扰
     msg = get_hour_call()[now.hour]
-    await svhc.broadcast(msg)
+    await sv.broadcast(msg)
     #发送语音
 
 @sv.on_prefix('手动报时')
-async def manual_hour_call(bot,ev):
+async def manual_hour_call(bot: KokkoroBot, ev: EventInterface):
     now = datetime.now(tz)
     msg = get_hour_call()[now.hour]
-    await bot.kkr_send(ev,msg)
+    await sv.broadcast(msg)
     #发送语音
